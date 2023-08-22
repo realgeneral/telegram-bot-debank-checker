@@ -1,0 +1,4 @@
+loguru~=0.7.0
+asyncio~=3.4.3
+selenium~=4.11.2
+aiogram~=2.25.1
