@@ -18,7 +18,9 @@ async def async_screenshot(wallet):
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--no-sandbox")  
     options.add_argument("--disable-gpu")
-    options.add_argument("--remote-debugging-port=9222")
+    options.add_argument("--disable-extensions")
+    options.add_argument("--disable-software-rasterizer")
+    options.add_argument("--remote-debugging-port=0")
     service = Service(chromedriver_path, log_path='chromedriver.log')
 
     driver = webdriver.Chrome(service=service, options=options)
@@ -33,7 +35,7 @@ async def async_screenshot(wallet):
         driver.get(url)
     
     # Создаем объект WebDriverWait с ожиданием до 10 секунд
-        wait = WebDriverWait(driver, 10)
+        wait = WebDriverWait(driver, 30)
     
     # Ожидаем появления элемента для клика
         element_to_click = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, css_selector_for_click)))
