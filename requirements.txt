@@ -1,3 +1,5 @@
 loguru~=0.6.0
 requests~=2.28.2
+asyncio~=3.4.3
+selenium~=4.11.2
 aiogram~=2.25.1
