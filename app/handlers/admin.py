@@ -7,6 +7,7 @@ from aiogram.dispatcher.filters import Text
 from app.create_bot import dp, bot
 from app.states import AdminMode, UserFollowing
 from app.handlers.first_start import user_db
+
 ADMIN_ID = ""
 
 

@@ -12,7 +12,7 @@ from app.utils.UsersDb import Users
 
 CHANNEL_ID = -1001984019900
 NOTSUB_MESSAGE = "Looks like you're not subscribed yet! 🙁 Subscribe now to access all the features"
-max_request_count = 2
+max_request_count = 5
 
 user_db = Users()
 
@@ -20,7 +20,7 @@ user_db = Users()
 @dp.message_handler(commands=['start'])
 async def start_cmd(message: types.Message):
     buttons = [
-        KeyboardButton(text="🚀 LESS GOOO!"),
+        KeyboardButton(text="💪 LFGGG !"),
     ]
     reply_markup = ReplyKeyboardMarkup(keyboard=[buttons], resize_keyboard=True)
 
@@ -40,7 +40,7 @@ def check_sub_channel(chat_member):
     return False
 
 
-@dp.message_handler(Text(equals="🚀 LESS GOOO!"), state=UserFollowing.check_subscribe)
+# @dp.message_handler(Text(equals="💪 LFGGG !"), state=UserFollowing.check_subscribe)
 async def check_subscribe(message: types.Message):
     await UserFollowing.check_subscribe.set()
     await message.answer(
@@ -52,24 +52,27 @@ async def check_subscribe(message: types.Message):
         reply_markup=check_sub_menu)
 
 
-@dp.callback_query_handler(text="is_subscribe", state=UserFollowing.check_subscribe)
-async def is_subscribe(callback_query: types.CallbackQuery):
-    await bot.delete_message(chat_id=callback_query.message.chat.id, message_id=callback_query.message.message_id)
+@dp.message_handler(Text(equals="💪 LFGGG !"), state=UserFollowing.check_subscribe)
+async def first_free_use(message: types, state: FSMContext):
+    first_use = 0
+    await state.update_data(first_use=first_use)
 
-    user_id = callback_query.from_user.id
-
+    user_id = message.from_user.id
     today = date.today()
     formatted_date = today.strftime('%Y-%m-%d %H:%M:%S')
-    print(str(formatted_date))
 
-    user_db.add_user(user_id, str(formatted_date), wallet_count=5, request_count=0,)
+    user_db.add_user(user_id, str(formatted_date), wallet_count=5, request_count=100)
 
-    if check_sub_channel(await bot.get_chat_member(chat_id=CHANNEL_ID, user_id=callback_query.from_user.id)):
-        await UserFollowing.get_wallets.set()
-        await bot.send_message(callback_query.from_user.id, "<b> Load-up your wallets below ⬇️ </b>\n\n",
-                               parse_mode=types.ParseMode.HTML,
-                               reply_markup=ReplyKeyboardRemove())
-    else:
-        await bot.send_message(callback_query.from_user.id, NOTSUB_MESSAGE, reply_markup=check_sub_menu)
+    is_ready = 0
+    await state.update_data(is_ready=is_ready)
+    await UserFollowing.get_wallets.set()
+    await bot.send_message(message.from_user.id, "🔽 *DROP YOUR WALLETS BELOW AND PRESS ENTER! (max. 5)*  \n\n"
+                                                 "*Format:* \n"
+                                                 "• _Wallet adress1_\n"
+                                                 "• _Wallet adress2_\n"
+                                                 "• _Wallet adress3_",
+                           parse_mode=types.ParseMode.MARKDOWN,
+                           reply_markup=ReplyKeyboardRemove())
+
 
 
