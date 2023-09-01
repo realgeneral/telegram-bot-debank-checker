@@ -126,6 +126,9 @@ async def wallets(message: types.Message, state: FSMContext):
             if len(wallets_list) == 0:
                 message_reply += "🙁 Invalid address"
 
+                is_ready = 0
+                await state.update_data(is_ready=is_ready)
+
                 await UserFollowing.get_wallets.set()
                 await message.answer(message_reply, reply_markup=ReplyKeyboardRemove(),
                                      parse_mode=types.ParseMode.MARKDOWN)
@@ -173,9 +176,11 @@ async def wallets(message: types.Message, state: FSMContext):
                             chain_name = id_name_dict[chain]
                         else:
                             chain_name = chain
+
+                        print(f"chain_name - {chain_name}")
                         await bot.edit_message_text(chat_id=wait_message.chat.id,
                                                     message_id=wait_message.message_id,
-                                                    text=f"⏳ <b>Getting information about networks {i+1}/{len(list_used_chains)}</b> \n\n"
+                                                    text=f"⏳ <b>Getting information about networks {i + 1}/{len(list_used_chains)}</b> \n\n"
                                                          f"<i>{random_quotes}</i>",
                                                     parse_mode=types.ParseMode.HTML)
                         results = await Checker.chain_balance(node_process, session, wallet, chain, None, min_amount)
@@ -186,7 +191,13 @@ async def wallets(message: types.Message, state: FSMContext):
                         total_sum = 0
 
                         for result in results:
-                            total_sum += round(result["amount"] * result["price"], 2)
+                            if result["amount"] is None or result["price"] is None:
+                                continue
+                            else:
+                                print(f'result - {result["amount"]}')
+                                print(f'price - {result["price"]}')
+
+                                total_sum += round(result["amount"] * result["price"], 2)
                         if total_sum == 0:
                             continue
 
