@@ -168,16 +168,17 @@ async def wallets(message: types.Message, state: FSMContext):
                 list_used_chains = await Checker.get_used_chains(node_process, session, wallet)
 
                 if list_used_chains == -1:
-                    pass
+                    continue
                 else:
                     counter_networks = 1
+                    data_list = []
+
                     for chain, i in zip(list_used_chains, range(len(list_used_chains))):
                         if chain in id_name_dict:
                             chain_name = id_name_dict[chain]
                         else:
                             chain_name = chain
 
-                        print(f"chain_name - {chain_name}")
                         await bot.edit_message_text(chat_id=wait_message.chat.id,
                                                     message_id=wait_message.message_id,
                                                     text=f"⏳ <b>Getting information about networks {i + 1}/{len(list_used_chains)}</b> \n\n"
@@ -194,21 +195,25 @@ async def wallets(message: types.Message, state: FSMContext):
                             if result["amount"] is None or result["price"] is None:
                                 continue
                             else:
-                                print(f'result - {result["amount"]}')
-                                print(f'price - {result["price"]}')
-
                                 total_sum += round(result["amount"] * result["price"], 2)
-                        if total_sum == 0:
-                            continue
 
-                        prefix = "├──>" if i < len(list_used_chains) - 1 else "└──>"
-
-                        if usd_balance != -1:
-                            message_reply += f' `{prefix}{chain_name}: {round(total_sum, 2)}$ ({round(total_sum / usd_balance * 100, 2)}%)`\n'
-                        else:
-                            message_reply += f' `{prefix}{chain_name}: {round(total_sum, 2)}$`\n'
-
+                        data_list.append((chain_name, total_sum, total_sum / usd_balance * 100))
                         counter_networks += 1
+
+                    sorted_data = sorted(data_list, key=lambda x: x[1], reverse=True)
+
+                    for item, i in zip(sorted_data, range(len(sorted_data))):
+                            chain_name, total_sum, percent = item
+
+                            if total_sum == 0:
+                                continue
+
+                            prefix = "├──>" if i < len(list_used_chains) - 1 else "└──>"
+
+                            if usd_balance != -1:
+                                message_reply += f' `{prefix}{chain_name}: {round(total_sum, 2)}$ ({round(percent, 1)}%)`\n'
+                            else:
+                                message_reply += f' `{prefix}{chain_name}: {round(total_sum, 2)}$`\n'
 
                     debank_markup = InlineKeyboardMarkup(row_width=1)
                     debank_button = InlineKeyboardButton(text="Debank", url=f'https://debank.com/profile/{wallet}')
