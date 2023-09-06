@@ -66,7 +66,7 @@ async def send_request(node_process, session, method, url, payload={}, params={}
         else:
             await edit_session_headers(node_process, session, payload, method, url)
 
-        await asyncio.sleep(0.25)
+        await asyncio.sleep(0.1)
 
 
 def setup_session():
