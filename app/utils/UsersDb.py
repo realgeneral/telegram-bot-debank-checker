@@ -121,5 +121,17 @@ class Users:
         except sqlite3.Error as e:
             print(f"Error setting request count and date: {e}")
 
+    def check_user_exists(self, telegram_id):
+        try:
+            self.cursor.execute("SELECT * FROM users WHERE telegram_id = ?", (telegram_id,))
+            user = self.cursor.fetchone()
+            if user:
+                return user
+            else:
+                return None
+        except sqlite3.Error as e:
+            print(f"Error checking user: {e}")
+            return None
+
     def close(self):
         self.conn.close()
