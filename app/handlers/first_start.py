@@ -44,7 +44,7 @@ def check_sub_channel(chat_member):
 async def check_subscribe(message: types.Message):
     await UserFollowing.check_subscribe.set()
     await message.answer(
-        "👋📢 Whoa, hold up! Haven't joined our <a href='https://t.me/EBSH_WEB3'>channel</a> yet? \n\n"
+        "👋📢 Whoa, hold up! Haven't joined our <a href='https://t.me/ARNI_Concepts'>channel</a> yet? \n\n"
         "We're dropping <b> crypto wisdom </b> and sharing our <b> know-how </b>. \n"
         "Your sub supports us to make <b> new retro-bots </b> for You! \n \n"
         "Hit that sub button below ⬇️, then <b> hit us back </b> with  <b> 'Done'</b>! ",
