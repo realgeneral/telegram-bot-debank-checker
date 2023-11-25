@@ -60,13 +60,17 @@ async def first_free_use(message: types, state: FSMContext):
     user_id = message.from_user.id
     today = date.today()
     formatted_date = today.strftime('%Y-%m-%d %H:%M:%S')
-
-    user_db.add_user(user_id, str(formatted_date), wallet_count=5, request_count=100)
+    wallet_count = 5
+    if user_db.check_user_exists(user_id):
+        wallet_count = user_db.get_max_wallets(user_id)
+    else:
+        user_db.add_user(user_id, str(formatted_date), wallet_count=wallet_count, request_count=100)
 
     is_ready = 0
     await state.update_data(is_ready=is_ready)
+
     await UserFollowing.get_wallets.set()
-    await bot.send_message(message.from_user.id, "🔽 *DROP YOUR WALLETS BELOW AND PRESS ENTER! (max. 5)*  \n\n"
+    await bot.send_message(message.from_user.id, f"🔽 *DROP YOUR WALLETS BELOW AND PRESS ENTER! (max. {wallet_count})*  \n\n"
                                                  "*Format:* \n"
                                                  "• _Wallet adress1_\n"
                                                  "• _Wallet adress2_\n"
